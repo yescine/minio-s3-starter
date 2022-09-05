@@ -1,0 +1,17 @@
+{
+  "name": "minio-s3",
+  "version": "1.0.0",
+  "description": "minio equivalent s3 test sdk api",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "minio": "^7.0.32"
+  },
+  "devDependencies": {
+    "@types/minio": "^7.0.13"
+  }
+}
