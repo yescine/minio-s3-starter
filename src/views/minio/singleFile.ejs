@@ -13,19 +13,47 @@
   <input type="file" id="myFile" />
   <button onclick="uploadFile()">submit</button>
 
+  <h4>Multiple file form</h4>
+  <input type="file" id="multipleFiles" multiple />
+  <button onclick="uploadFiles()">submit multiple</button>
+
   <script>
     const inputElement = document.getElementById("myFile");
-    inputElement.addEventListener("change", handleFiles, false);
+    const inputElements = document.getElementById("multipleFiles");
+
+    inputElement.addEventListener("change", handleFile, false);
+    inputElements.addEventListener("change", handleFiles, false);
+
+    function handleFile() {
+      const fileList = this.files; /* now you can work with the file list */
+      console.log({ fileList })
+    }
+
     function handleFiles() {
       const fileList = this.files; /* now you can work with the file list */
       console.log({ fileList })
     }
+
     function uploadFile() {
-      var data = new FormData()
+      var data = new FormData({ enctype: "multipart/form-data" })
       data.append('file', inputElement.files[0])
       data.append('user', 'hubot')
 
       fetch('/api/file', {
+        method: 'POST',
+        body: data
+      })
+    }
+
+    function uploadFiles() {
+      var data = new FormData()
+      for (let idx = 0; idx < inputElements.files.length; idx++) {
+        let file = inputElements.files[idx]
+        data.append('files', file)
+      }
+      data.append('user', 'another')
+
+      fetch('/api/files', {
         method: 'POST',
         body: data
       })
