@@ -1,17 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
 </head>
+
 <body>
   <h2>get object from query param</h2>
-  <p>Only if public</p>
-  <img src="http://localhost:9000/test-dev/avatar/1662452256219-mino-scale-up.png" height="500px" width="500px"/>
-  <script >
+  <p>Only if public | allowed ressource</p>
+  <img src="http://localhost:9000/test-dev/avatar/1662466042108-start-up-act.jpg" height="250px" width="500px" />
+  <h5>data from request query</h5>
+  <pre><%= data %></pre>
+  <script>
+
+    if ('URLSearchParams' in window) {
+      const searchParams = new URLSearchParams(window.location.search);
+      searchParams.set("fileName", "mino-scale-up.png");
+      // window.location.search = searchParams.toString();
+      const newRelativePathQuery = window.location.pathname + '?' + searchParams.toString();
+      history.pushState(null, '', newRelativePathQuery);
+    }
 
   </script>
 </body>
+
 </html>

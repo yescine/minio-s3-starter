@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { minioClient } from "../../src/index";
 import multer from "multer";
-import { UploadedObjectInfo } from "minio";
+import { UploadedObjectInfo, BucketItemStat } from "minio";
 const router = Router();
-const bucket = "test-dev"
+const bucket = "test-dev";
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "./upload");
@@ -40,11 +40,11 @@ router.post("/file", fUpload.single("file"), async (req, res, next) => {
   res.send({ message });
 });
 
-router.post("/files", fUpload.array("files",5), async (req, res, next) => {
+router.post("/files", fUpload.array("files", 5), async (req, res, next) => {
   // console.log({ body: req.body, file: req.files });
-  const files = req.files
+  const files = req.files;
   // @ts-ignore
-  files.forEach(async(file,idx)=>{
+  files.forEach(async (file, idx) => {
     const metaData = {
       "Content-Type": "application/octet-stream",
       "X-Amz-Meta-Testing": 1234,
@@ -59,23 +59,32 @@ router.post("/files", fUpload.array("files",5), async (req, res, next) => {
     });
     const message = `file ${file.filename} uploaded with etag = ${result.etag}`;
     console.log(message);
-  })
+  });
   // @ts-ignore
-  const message = `uploaded: ${files.map(file=>file.filename).join('-')}`
+  const message = `uploaded: ${files.map((file) => file.filename).join("-")}`;
   res.send({ message });
 });
 
-router.get("/object", (req, res, next) => {
-  const {fileName,etag} = req.query
-  res.render('minio/object')
-  minioClient.statObject(bucket,fileName.toString(),(err,stat)=>{
-    if(err) console.log(err)
-    console.log({stat})
-  })
-  minioClient.presignedGetObject(bucket,fileName.toString(),(err,url)=>{
-    if(err) console.log(err)
-    console.log({url})
-  })
+router.get("/object", async (req, res, next) => {
+  const { fileName, etag } = req.query;
+
+  const stat: BucketItemStat = await new Promise((resolve, reject) => {
+    minioClient.statObject(bucket, fileName.toString(), (err, stat) => {
+      if (err) console.log(err);
+      console.log({ stat });
+      resolve(stat);
+    });
+  });
+
+  const url: string = await new Promise((resolve, reject) => {
+    minioClient.presignedGetObject(bucket, fileName.toString(), (err, url) => {
+      if (err) console.log(err);
+      console.log({ url });
+      resolve(url)
+    });
+  });
+
+  res.render("minio/object", { data: JSON.stringify({ url, ...stat }, null, 2) });
 });
 
 router.get("/file_test", (req, res, next) => {
