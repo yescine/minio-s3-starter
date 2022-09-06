@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <h4>file form</h4>
+  <input type="file" id="myFile" />
+  <button onclick="uploadFile()">submit</button>
+
+  <script>
+    const inputElement = document.getElementById("myFile");
+    inputElement.addEventListener("change", handleFiles, false);
+    function handleFiles() {
+      const fileList = this.files; /* now you can work with the file list */
+      console.log({ fileList })
+    }
+    function uploadFile() {
+      var data = new FormData()
+      data.append('file', inputElement.files[0])
+      data.append('user', 'hubot')
+
+      fetch('/api/file', {
+        method: 'POST',
+        body: data
+      })
+    }
+  </script>
+
+</body>
+
+</html>
